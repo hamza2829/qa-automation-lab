@@ -1,0 +1,5 @@
+__pycache__/
+reports/
+*.log
+groovy-*/
+*.zip

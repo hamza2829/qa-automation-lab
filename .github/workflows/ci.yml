@@ -1,0 +1,56 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash -o pipefail {0}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      BASE_URL: http://127.0.0.1:8000
+      GROOVY_VERSION: 4.0.24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Python deps and Playwright
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Install Groovy
+        run: |
+          curl -sSLo groovy.zip "https://archive.apache.org/dist/groovy/${GROOVY_VERSION}/distribution/apache-groovy-binary-${GROOVY_VERSION}.zip"
+          unzip -q groovy.zip
+          echo "$PWD/groovy-${GROOVY_VERSION}/bin" >> "$GITHUB_PATH"
+      - name: Lint Jenkinsfile
+        run: npx --yes npm-groovy-lint --failon error Jenkinsfile 2>&1 | tail -n 20
+      - name: Derive test cases from requirements
+        run: python -m scripts.derive_test_cases
+      - name: Bug detection matrix
+        run: python -m scripts.bug_matrix 2>&1 | tail -n 20
+      - name: Start app
+        run: nohup python -m uvicorn app.main:app --port 8000 > app.log 2>&1 &
+      - name: Run all suites
+        run: python -m scripts.run_all --wait 2>&1 | tail -n 20
+      - name: Allure HTML report
+        if: always()
+        run: npx --yes allure-commandline generate reports/allure-results -o reports/allure-report --clean 2>&1 | tail -n 5
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports
+          path: |
+            reports/
+            app.log
