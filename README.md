@@ -26,7 +26,17 @@ python -m scripts.bug_matrix && python -m scripts.run_all --wait
 ## Results (measured in GitHub Actions)
 
 <!-- RESULTS:START -->
-Filled automatically from the CI run artifact by `scripts/update_readme.py`.
+| Metric | Value |
+|---|---|
+| Test cases executed | 45 |
+| Passed | 45 |
+| Failed | 0 |
+| Skipped | 0 |
+| API tests / runtime | 33 / 0.57 s |
+| E2E tests / runtime | 6 / 1.92 s |
+| GROOVY tests / runtime | 6 / 2.31 s |
+| Total suite runtime | 4.8 s |
+| Seeded bugs detected | 6 of 6 |
 <!-- RESULTS:END -->
 
 ## Seeded bugs
