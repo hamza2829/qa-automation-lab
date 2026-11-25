@@ -1,0 +1,6 @@
+req_id,title,test_scope,priority
+REQ-01,Product catalogue lists all products with id name price stock,API;E2E;Groovy,High
+REQ-02,Only valid credentials can log in and the cart needs login,API;E2E;Groovy,High
+REQ-03,Cart validates quantity and stock and computes totals,API;E2E,High
+REQ-04,Checkout creates orders applies discounts and reduces stock,API;E2E,High
+REQ-05,Seed and requirement data are consistent,Groovy,Medium
